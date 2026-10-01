@@ -1,0 +1,26 @@
+# Repository instructions
+
+Scope: this Cloudron JobSpy API package. Read this file, `README.md`, `CloudronManifest.json`, and `CloudronVersions.json` before changing or releasing it. Cloudron references: https://docs.cloudron.io/packaging/publishing/ and https://docs.cloudron.io/packaging/versions/ .
+
+## Completion standard
+
+Deliver complete requested work, not just source edits. When release is requested and exact target/context/operations are already authorized in conversation, perform build, local smoke test, image push, catalog append, Git push, and public verification in one workflow. Do not repeatedly ask for details already given. If authorization is missing for a high-impact operation, ask one precise question listing missing target/context/resources; never assume permission. Do not claim success before verifying public image and catalog. Report completed actions, actual checks and outcomes, blocked operations, and unresolved risks separately.
+
+## Fixed project facts
+
+- GitHub source and HTTPS catalog: `https://github.com/ericm115/jobspy-cloudron` and `https://raw.githubusercontent.com/ericm115/jobspy-cloudron/main/CloudronVersions.json`.
+- Public Docker Hub image prefix: `docker.io/emoralesjw/jobspy-cloudron`. Verify Docker context and target authorization before running Docker. Cloudron production installation is separate; do not do it without specific authorization.
+- Manifest ID `com.jobworks.jobspy`; minimum Cloudron `10.0.0`; app serves port `8000` and `/health`; `localstorage` mounts writable `/app/data` for generated API key. No key or Docker/GitHub credentials belong in source, image, command output, or logs.
+- `README.md` documents API, validation, key handling, and user-facing installation. Keep it accurate when API or release status changes.
+- Keep unrelated untracked artifacts untouched; stage only intended files. Inspect Git status, diff, and recent log before committing; do not force push or skip hooks.
+
+## Update and publish checklist
+
+1. Inspect repository state and existing catalog; choose new semver (`X.Y.Z`). Never reuse a published version or overwrite a published tag. Update `CloudronManifest.json` `version` and `changelog`; implement change and tests; update README. Keep current image/runtime compatibility in mind.
+2. Run `python -B -m unittest -v test_app`, `git diff --check`, and `cloudron versions verify`. Inspect commands/scripts before invoking them. Inspect Git diff for credentials and unintended changes.
+3. For a separately authorized Docker release, build **current source** from this workspace using the authorized context, tag `docker.io/emoralesjw/jobspy-cloudron:X.Y.Z`. Smoke-test fresh image: localhost `/health`, missing/wrong bearer, authenticated small real Indeed search, returned JSON fields, and changed functionality. Cloudron normally mounts `/app/data`; local container test requires *temporary writable* `/app/data` (for example Docker `--tmpfs /app/data:rw`) without host bind mounts. If port 8000 is busy, bind localhost port 8001 to container port 8000. Stop/remove only temporary containers created for this test. Never confuse missing `/app/data` in an ad-hoc container with a Cloudron runtime defect.
+4. Push exact new tag to Docker Hub. Verify anonymous pullability, not only successful authenticated push or Docker Hub `is_private=false`: obtain unauthenticated token with pull scope and check registry manifest HTTP 200, or otherwise confirm unauthenticated pull. Do not print registry tokens or API keys. If check fails, do not publish catalog entry yet.
+5. **Append**, never replace: `cloudron versions add --image docker.io/emoralesjw/jobspy-cloudron:X.Y.Z --state published` after image is public and smoke-tested. The CLI embeds a full manifest snapshot. Ensure every old `CloudronVersions.json` entry remains unchanged, new entry matches `CloudronManifest.json`, `dockerImage` points at public new tag, and `publishState` is `published`. Run `cloudron versions verify`. For an intentionally staged release use `--state testing`, then update *new version only* to `published` after validation. Do not run `cloudron versions init` on an existing catalog to replace history. Cloudron community users obtain updates through hosted catalog; server-local `cloudron install` builds cannot be catalog images.
+6. Inspect `git status`, `git diff`, and `git log --oneline -10`; stage only intended source/tests/README/manifest/catalog files. Commit and push to authorized GitHub `main`. Verify raw public catalog responds and retains all prior entries with new published image, and Docker image still pulls anonymously. Report image tag/digest, commit, checks and Cloudron install URL. No Cloudron install without separate authorization.
+
+For a critical bad release, follow Cloudron's revoke-and-new-version process; never silently edit previously published entries. Do not run Docker directly unless allowed by governing instructions; delegate Docker release operations to release specialist with explicit operation, context, image, and path authorization.

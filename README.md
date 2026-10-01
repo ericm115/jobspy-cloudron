@@ -10,7 +10,7 @@ Add this URL under Cloudron **Community apps**:
 
 Cloudron installs the published image and provides HTTPS. On first start, `start.sh` generates a random key at `/app/data/api-key`. Use the app's Cloudron terminal to read it; never commit, log, or send it in a URL. `/app/data` is persistent and backed up by Cloudron. Restart preserves the key; restore from backup also restores it. Key must contain at least 32 characters. If the key is lost, remove `/app/data/api-key` and restart the app to create a new one; existing clients then need the new key. To rotate, replace the file with a freshly generated key, restrict access to the app user, then restart (the server reads the key only at startup). On Cloudron, use HTTPS, not HTTP.
 
-Note: `distance` support in this working tree is not in published `0.1.0`; publish a new package version before using it on Cloudron.
+`distance` is available in published version `0.1.1` and newer; version `0.1.0` rejects it.
 
 `GET /health` returns `{"status":"ok"}` without authentication. `POST /scrape` requires `Authorization: Bearer <key>`, `Content-Type: application/json`, and a JSON object body. Example PowerShell request (replace placeholders; do not save a real key in source):
 
