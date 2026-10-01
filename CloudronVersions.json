@@ -29,11 +29,11 @@
                 "addons": {
                     "localstorage": {}
                 },
-                "dockerImage": "ghcr.io/ericm115/jobspy-cloudron:0.1.0"
+                "dockerImage": "docker.io/emoralesjw/jobspy-cloudron:0.1.0"
             },
             "creationDate": "Thu, 01 Oct 2026 15:22:00 GMT",
-            "ts": "Thu, 01 Oct 2026 15:22:00 GMT",
-            "publishState": "testing"
+            "ts": "Thu, 01 Oct 2026 15:32:55 GMT",
+            "publishState": "published"
         }
     }
 }
