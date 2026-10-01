@@ -68,6 +68,40 @@
             "creationDate": "Thu, 01 Oct 2026 15:52:54 GMT",
             "ts": "Thu, 01 Oct 2026 15:52:54 GMT",
             "publishState": "published"
+        },
+        "0.1.2": {
+            "manifest": {
+                "manifestVersion": 2,
+                "id": "com.jobworks.jobspy",
+                "title": "JobSpy API",
+                "version": "0.1.2",
+                "minBoxVersion": "10.0.0",
+                "description": "Private, authenticated JSON job search API powered by JobSpy. Scraping depends on third-party job boards and may be rate-limited.",
+                "tagline": "Search job boards through a private API",
+                "website": "https://github.com/speedyapply/JobSpy",
+                "packageUrl": "https://github.com/ericm115/jobspy-cloudron",
+                "packagerName": "jobspy-cloudron contributors",
+                "packagerUrl": "https://github.com/ericm115/jobspy-cloudron",
+                "iconUrl": "https://raw.githubusercontent.com/ericm115/jobspy-cloudron/main/icon.svg",
+                "tags": [
+                    "hosting"
+                ],
+                "mediaLinks": [
+                    "https://raw.githubusercontent.com/ericm115/jobspy-cloudron/main/banner.svg"
+                ],
+                "changelog": "* Allow optional job description fetching via fetch_description",
+                "postInstallMessage": "Open the app's Cloudron terminal and read `/app/data/api-key`. Keep this key private. Send `Authorization: Bearer <key>` with POST /scrape. Rotate the key by replacing that file with a new random key (at least 32 characters) and restarting the app. If the key is lost, delete the file and restart to generate a new one. Health: GET /health.",
+                "httpPort": 8000,
+                "healthCheckPath": "/health",
+                "memoryLimit": 1073741824,
+                "addons": {
+                    "localstorage": {}
+                },
+                "dockerImage": "docker.io/emoralesjw/jobspy-cloudron:0.1.2"
+            },
+            "creationDate": "Thu, 01 Oct 2026 16:30:36 GMT",
+            "ts": "Thu, 01 Oct 2026 16:30:36 GMT",
+            "publishState": "published"
         }
     }
 }

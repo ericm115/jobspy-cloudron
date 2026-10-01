@@ -7,7 +7,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 KEY_PATH = os.environ.get("JOBSPY_KEY_PATH", "/app/data/api-key")
 SITES = {"indeed", "linkedin", "zip_recruiter", "glassdoor", "google", "bayt", "naukri", "bdjobs"}
-FIELDS = {"site_name", "search_term", "google_search_term", "location", "results_wanted", "hours_old", "distance", "country_indeed"}
+FIELDS = {"site_name", "search_term", "google_search_term", "location", "results_wanted", "hours_old", "distance", "country_indeed", "fetch_description"}
 BUSY = threading.BoundedSemaphore(1)
 
 
@@ -36,6 +36,10 @@ def validate(data):
             raise ValueError(f"invalid {field}")
         if value is not None:
             params[field] = value
+    if "fetch_description" in data:
+        if type(data["fetch_description"]) is not bool:
+            raise ValueError("invalid fetch_description")
+        params["fetch_description"] = data["fetch_description"]
     return params
 
 

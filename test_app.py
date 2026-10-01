@@ -60,9 +60,12 @@ class ApiTests(unittest.TestCase):
         try:
             self.assertEqual(self.request("POST", "/scrape", json.dumps({
                 "search_term": "developer", "location": "Austin, TX", "results_wanted": 2,
-                "hours_old": 72, "distance": 25
+                "hours_old": 72, "distance": 25, "fetch_description": True
             }), key)[0], 200)
             self.assertEqual(calls[0]["distance"], 25)
+            self.assertIs(calls[0]["fetch_description"], True)
+            self.assertEqual(self.request("POST", "/scrape", '{"search_term":"developer"}', key)[0], 200)
+            self.assertNotIn("fetch_description", calls[1])
         finally:
             sys.modules["jobspy"].scrape_jobs = original
         for payload in ({}, {"search_term": "x", "results_wanted": 500},
@@ -73,7 +76,10 @@ class ApiTests(unittest.TestCase):
                         {"search_term": "x", "distance": 0},
                         {"search_term": "x", "distance": 201},
                         {"search_term": "x", "distance": True},
-                        {"search_term": "x", "distance": "25"}):
+                        {"search_term": "x", "distance": "25"},
+                        {"search_term": "x", "fetch_description": "true"},
+                        {"search_term": "x", "fetch_description": 1},
+                        {"search_term": "x", "fetch_description": None}):
             with self.subTest(payload=payload):
                 self.assertEqual(self.request("POST", "/scrape", json.dumps(payload), key)[0], 400)
         self.assertEqual(self.request("POST", "/scrape", "not-json", key)[0], 400)
