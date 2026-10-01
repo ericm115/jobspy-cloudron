@@ -63,9 +63,12 @@ class ApiTests(unittest.TestCase):
                 "hours_old": 72, "distance": 25, "fetch_description": True
             }), key)[0], 200)
             self.assertEqual(calls[0]["distance"], 25)
-            self.assertIs(calls[0]["fetch_description"], True)
+            self.assertIs(calls[0]["linkedin_fetch_description"], True)
+            self.assertNotIn("fetch_description", calls[0])
             self.assertEqual(self.request("POST", "/scrape", '{"search_term":"developer"}', key)[0], 200)
-            self.assertNotIn("fetch_description", calls[1])
+            self.assertNotIn("linkedin_fetch_description", calls[1])
+            self.assertEqual(self.request("POST", "/scrape", '{"search_term":"developer","fetch_description":false}', key)[0], 200)
+            self.assertIs(calls[2]["linkedin_fetch_description"], False)
         finally:
             sys.modules["jobspy"].scrape_jobs = original
         for payload in ({}, {"search_term": "x", "results_wanted": 500},

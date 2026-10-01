@@ -39,7 +39,8 @@ def validate(data):
     if "fetch_description" in data:
         if type(data["fetch_description"]) is not bool:
             raise ValueError("invalid fetch_description")
-        params["fetch_description"] = data["fetch_description"]
+        # ponytail: pinned JobSpy 1.1.82 supports description fetching for LinkedIn only; revisit on upgrade.
+        params["linkedin_fetch_description"] = data["fetch_description"]
     return params
 
 
