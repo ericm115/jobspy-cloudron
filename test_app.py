@@ -54,11 +54,26 @@ class ApiTests(unittest.TestCase):
         key = self.server.api_key
         self.assertEqual(self.request("POST", "/scrape", '{"search_term":"developer"}', key),
                          (200, {"jobs": [{"site": "indeed", "title": "Developer"}]}))
+        calls = []
+        original = sys.modules["jobspy"].scrape_jobs
+        sys.modules["jobspy"].scrape_jobs = lambda **kwargs: (calls.append(kwargs), FakeFrame())[1]
+        try:
+            self.assertEqual(self.request("POST", "/scrape", json.dumps({
+                "search_term": "developer", "location": "Austin, TX", "results_wanted": 2,
+                "hours_old": 72, "distance": 25
+            }), key)[0], 200)
+            self.assertEqual(calls[0]["distance"], 25)
+        finally:
+            sys.modules["jobspy"].scrape_jobs = original
         for payload in ({}, {"search_term": "x", "results_wanted": 500},
                         {"search_term": "x", "results_wanted": True},
                         {"search_term": "x", "proxies": ["localhost"]},
                         {"search_term": "x", "site_name": ["google"]},
-                        {"search_term": "x", "results_wanted": None}):
+                        {"search_term": "x", "results_wanted": None},
+                        {"search_term": "x", "distance": 0},
+                        {"search_term": "x", "distance": 201},
+                        {"search_term": "x", "distance": True},
+                        {"search_term": "x", "distance": "25"}):
             with self.subTest(payload=payload):
                 self.assertEqual(self.request("POST", "/scrape", json.dumps(payload), key)[0], 400)
         self.assertEqual(self.request("POST", "/scrape", "not-json", key)[0], 400)

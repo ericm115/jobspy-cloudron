@@ -7,7 +7,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 KEY_PATH = os.environ.get("JOBSPY_KEY_PATH", "/app/data/api-key")
 SITES = {"indeed", "linkedin", "zip_recruiter", "glassdoor", "google", "bayt", "naukri", "bdjobs"}
-FIELDS = {"site_name", "search_term", "google_search_term", "location", "results_wanted", "hours_old", "country_indeed"}
+FIELDS = {"site_name", "search_term", "google_search_term", "location", "results_wanted", "hours_old", "distance", "country_indeed"}
 BUSY = threading.BoundedSemaphore(1)
 
 
@@ -30,7 +30,7 @@ def validate(data):
         raise ValueError("search_term or google_search_term required")
     if "google" in sites and "google_search_term" not in params:
         raise ValueError("google_search_term required for google")
-    for field, minimum, maximum, default in (("results_wanted", 1, 25, 10), ("hours_old", 1, 8760, None)):
+    for field, minimum, maximum, default in (("results_wanted", 1, 25, 10), ("hours_old", 1, 8760, None), ("distance", 1, 200, None)):
         value = data.get(field, default)
         if field in data and (type(value) is not int or not minimum <= value <= maximum):
             raise ValueError(f"invalid {field}")
